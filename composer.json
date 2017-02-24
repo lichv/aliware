@@ -1,0 +1,19 @@
+{
+    "name": "lichv/aliware",
+    "description": "aliyun software with mq queue",
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "autoload": {
+        "psr-4": {"Aliware\\": "src/"}
+    },
+
+    "license": "MIT",
+    "minimum-stability" : "dev",
+    "authors": [
+        {
+            "name": "lichv lee",
+            "email": "lichvg@gmail.com"
+        }
+    ]
+}
