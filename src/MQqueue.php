@@ -15,12 +15,12 @@ class MQqueue{
 	}
 	/**
 	 * 发送队列信息
-	 * @param type $post_Body
+	 * @param type $data
 	 * @return type array
 	 */	
-	public function sendmsg($post_Body,$key='http',$tag='http',$type=''){
-		$post_Body=self::gbktoutf8($post_Body);
-		$sign2=sprintf("%s\n%s\n%s\n%s", $this->Topic, $this->ProducerId, md5($post_Body), $this->time);
+	public function sendMsg($data,$key='http',$tag='http',$timeout=30){
+		$data=self::gbktoutf8($data);
+		$sign2=sprintf("%s\n%s\n%s\n%s", $this->Topic, $this->ProducerId, md5($data), $this->time);
 		$sign = base64_encode(hash_hmac('sha1', htmlentities($sign2),$this->SecretKey, true)); 
 		$header= array(
 			"AccessKey:" . $this->AccessKey, 
@@ -28,13 +28,13 @@ class MQqueue{
 			"Signature:" . $sign
 			);
 		$url = $this->openurl . "/message/?topic=" . $this->Topic . "&time=" . $this->time . "&tag=".$tag . "&key=".$key;
-		return  $this->request_curl($url, $post_Body, $header, $status, 'POST');
+		return  $this->request_curl($url, $data, $header, $status, 'POST',$timeout);
 	}
 	 /**
 	 * 接收队列信息
 	 * @return type array
 	 */
-	 public function Responsemsg($count=32,$key='http',$tag='http',$type=''){
+	 public function getMsg($count=32,$key='http',$tag='http',$timeout=30){
 	 	$sign2=sprintf("%s\n%s\n%s", $this->Topic, $this->ConsumerId,$this->time);
 	 	$sign = base64_encode(hash_hmac('sha1', htmlentities($sign2),$this->SecretKey, true)); 
 	 	$header= array(
@@ -44,14 +44,14 @@ class MQqueue{
 	 		);
 
 	 	$url = $this->openurl . "/message/?topic=" . $this->Topic . "&time=" . $this->time . "&num=" . $count. "&tag=".$tag . "&key=".$key;
-	 	return  $this->request_curl($url, false, $header, $status, 'GET');
+	 	return  $this->request_curl($url, false, $header, $status, 'GET',$timeout);
 	 }
 	/**
 	 * 删除队列
 	 * @param type $msgHandle
 	 * @return type array
 	 */
-	public function deleteMsg($msgHandle,$key='http',$tag='http') {
+	public function deleteMsg($msgHandle,$key='http',$tag='http',$timeout=30) {
 		$sign2 = sprintf("%s\n%s\n%s\n%s", $this->Topic, $this->ConsumerId, $msgHandle, $this->time);
 		$sign = base64_encode(hash_hmac('sha1', htmlentities($sign2), $this->SecretKey, true));
 		$header = array(
@@ -60,7 +60,7 @@ class MQqueue{
 			"Signature:" . $sign
 			);
 		$url = $this->openurl . "/message/?msgHandle=" . $msgHandle . "&topic=" . $this->Topic . "&time=" . $this->time;
-		return  $this->request_curl($url, false, $header, $status, 'DELETE');
+		return  $this->request_curl($url, false, $header, $status, 'DELETE',$timeout);
 	}
 	/**
 	 * 队列请求
@@ -99,7 +99,9 @@ class MQqueue{
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		}
 
-		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+		if(!empty($timeout)){
+			curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 5.1; rv:9.0.1) Gecko/20100101 Firefox/9.0.1");
 
