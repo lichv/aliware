@@ -63,9 +63,9 @@ class Sms{
 	 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	 		curl_close($ch);
 	 		if ($code == 200) {
-	 			return ['state'=>$code,'data'=>$result];
+	 			return ['state'=>$code,'data'=>json_decode($result,true)];
 	 		}else{
-	 			return ['state'=>$code,'msg'=>$result];
+	 			return ['state'=>$code,'msg'=>json_decode($result,true)];
 	 		}
 	 	} catch (\Exception $e) {
 	 		return ['state'=>$e->getCode(),'msg'=>$e->getMessage()];
