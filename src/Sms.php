@@ -49,23 +49,25 @@ class Sms{
 		}
 		$tmp = $this->mergePublicParams($data);
 		$tmp['Signature'] = $this->sign('POST', $tmp);
-
-		$ch = curl_init();
-		$options = array(
-			CURLOPT_URL => 'https://' . $this->conf['host'] . '/',
-			CURLOPT_POST => true,
-			CURLOPT_POSTFIELDS => http_build_query($tmp),
-			CURLOPT_HEADER => false,
-			CURLOPT_RETURNTRANSFER => true,
-			);
-		curl_setopt_array($ch, $options);
-		$result = curl_exec($ch);
-		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		curl_close($ch);
-		if ($code == 200) {
-			return ['state'=>$code,'data'=>$result]
+		try{
+			$ch = curl_init();
+			$options = array(
+				CURLOPT_URL => 'https://' . $this->conf['host'] . '/',
+				CURLOPT_POST => true,
+				CURLOPT_POSTFIELDS => http_build_query($tmp),
+				CURLOPT_HEADER => false,
+				CURLOPT_RETURNTRANSFER => true,
+				);
+			curl_setopt_array($ch, $options);
+			$result = curl_exec($ch);
+			$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
+			if ($code == 200) {
+				return ['state'=>$code,'data'=>$result];
+			}
+		} catch (\Exception $e) {
+			$result = ['state'=>$e->getCode(),'msg'=>$e->getMessage()];
 		}
-		throw new \Exception($r, $code);
 	 }
 
 	/**
