@@ -64,9 +64,11 @@ class Sms{
 			curl_close($ch);
 			if ($code == 200) {
 				return ['state'=>$code,'data'=>$result];
+			}else{
+				return ['state'=>$code,'msg'=>$result];
 			}
 		} catch (\Exception $e) {
-			$result = ['state'=>$e->getCode(),'msg'=>$e->getMessage()];
+			return ['state'=>$e->getCode(),'msg'=>$e->getMessage()];
 		}
 	 }
 
