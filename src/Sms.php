@@ -7,7 +7,7 @@ class Sms{
 	private $conf = array(
 		'host' => 'sms.aliyuncs.com',
 		'format' => 'json',
-		'version' => '2017-03-03',
+		'version' => '2016-09-27',
 		'signatureVersion' => '1.0',
 		'signatureMethod' => 'HMAC-SHA1',
 		'accessKeyId' => null,
@@ -37,39 +37,39 @@ class Sms{
 	 * @return boolean
 	 */
 	 public function singleSendSms($mobile, $params, $template = null, $sign = null){
-		$data = [
-		'Action' => 'SingleSendSms',
-		'SignName' => empty($sign) ? $this->conf['signName'] : $sign,
-		'TemplateCode' => empty($template) ? $this->conf['templateCode'] : $template,
-		'RecNum' => is_array($mobile) ? implode(',', $mobile) : $mobile,
-		'ParamString' => json_encode($params),
-		];
-		if (empty($data['SignName']) || empty($data['TemplateCode'])) {
-			return false;
-		}
-		$tmp = $this->mergePublicParams($data);
-		$tmp['Signature'] = $this->sign('POST', $tmp);
-		try{
-			$ch = curl_init();
-			$options = array(
-				CURLOPT_URL => 'https://' . $this->conf['host'] . '/',
-				CURLOPT_POST => true,
-				CURLOPT_POSTFIELDS => http_build_query($tmp),
-				CURLOPT_HEADER => false,
-				CURLOPT_RETURNTRANSFER => true,
-				);
-			curl_setopt_array($ch, $options);
-			$result = curl_exec($ch);
-			$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			curl_close($ch);
-			if ($code == 200) {
-				return ['state'=>$code,'data'=>$result];
-			}else{
-				return ['state'=>$code,'msg'=>$result];
-			}
-		} catch (\Exception $e) {
-			return ['state'=>$e->getCode(),'msg'=>$e->getMessage()];
-		}
+	 	$data = [
+	 	'Action' => 'SingleSendSms',
+	 	'SignName' => empty($sign) ? $this->conf['signName'] : $sign,
+	 	'TemplateCode' => empty($template) ? $this->conf['templateCode'] : $template,
+	 	'RecNum' => is_array($mobile) ? implode(',', $mobile) : $mobile,
+	 	'ParamString' => json_encode($params),
+	 	];
+	 	if (empty($data['SignName']) || empty($data['TemplateCode'])) {
+	 		return false;
+	 	}
+	 	$tmp = $this->mergePublicParams($data);
+	 	$tmp['Signature'] = $this->sign('POST', $tmp);
+	 	try{
+	 		$ch = curl_init();
+	 		$options = array(
+	 			CURLOPT_URL => 'https://' . $this->conf['host'] . '/',
+	 			CURLOPT_POST => true,
+	 			CURLOPT_POSTFIELDS => http_build_query($tmp),
+	 			CURLOPT_HEADER => false,
+	 			CURLOPT_RETURNTRANSFER => true,
+	 			);
+	 		curl_setopt_array($ch, $options);
+	 		$result = curl_exec($ch);
+	 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	 		curl_close($ch);
+	 		if ($code == 200) {
+	 			return ['state'=>$code,'data'=>$result];
+	 		}else{
+	 			return ['state'=>$code,'msg'=>$result];
+	 		}
+	 	} catch (\Exception $e) {
+	 		return ['state'=>$e->getCode(),'msg'=>$e->getMessage()];
+	 	}
 	 }
 
 	/**
