@@ -76,7 +76,7 @@ class Sms{
 	 		if ($code == 200) {
 	 			return ['state'=>$code,'data'=>json_decode($result,true)];
 	 		}else{
-	 			return ['state'=>$code,'msg'=>json_decode($result,true)];
+	 			return ['state'=>$code,'data'=>json_decode($result,true)];
 	 		}
 	 	} catch (\Exception $e) {
 	 		return ['state'=>$e->getCode(),'msg'=>$e->getMessage()];
