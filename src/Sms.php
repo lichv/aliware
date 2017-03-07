@@ -21,7 +21,18 @@ class Sms{
 	}
 
 	public function setConf($conf){
-		$this->conf = array_merge($this->conf, $conf);
+		$temp = [];
+		if(!empty($conf)){
+			foreach ($conf as $key => $value) {
+				if(array_key_exists($key, $this->conf)){
+					$temp[$key] = $value;
+				}
+			}
+		}
+		if(!empty($temp)){
+			$this->conf = array_merge($this->conf, $conf);
+		}
+		
 		return true;
 	}
 
